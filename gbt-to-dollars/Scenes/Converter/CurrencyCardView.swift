@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 
 final class CurrencyCardView: UIView {
 
@@ -16,7 +17,6 @@ final class CurrencyCardView: UIView {
         stack.axis = .horizontal
         stack.alignment = .center
         stack.distribution = .equalSpacing
-        stack.translatesAutoresizingMaskIntoConstraints = false
         return stack
     }()
 
@@ -25,13 +25,11 @@ final class CurrencyCardView: UIView {
         stack.axis = .horizontal
         stack.spacing = 12
         stack.alignment = .center
-        stack.translatesAutoresizingMaskIntoConstraints = false
         return stack
     }()
 
     private let flagImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.clipsToBounds = true
         return imageView
     }()
@@ -83,15 +81,13 @@ final class CurrencyCardView: UIView {
     }
 
     private func setupConstraints() {
-            NSLayoutConstraint.activate([
-                contentStack.topAnchor.constraint(equalTo: topAnchor, constant: AppConstants.Layout.cardPadding),
-                contentStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -AppConstants.Layout.cardPadding),
-                contentStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: AppConstants.Layout.cardPadding),
-                contentStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -AppConstants.Layout.cardPadding),
-
-                flagImageView.widthAnchor.constraint(equalToConstant: AppConstants.Layout.flagSize),
-                flagImageView.heightAnchor.constraint(equalToConstant: AppConstants.Layout.flagSize)
-            ])
+        contentStack.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(AppConstants.Layout.cardPadding)
+        }
+        flagImageView.snp.makeConstraints { make in
+            make.size.equalTo(AppConstants.Layout.flagSize)
+        }
+        
 
             flagImageView.layer.cornerRadius = AppConstants.Layout.flagCornerRadius
         }

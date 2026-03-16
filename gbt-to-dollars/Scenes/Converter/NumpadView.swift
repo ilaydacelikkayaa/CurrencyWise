@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 
 final class NumpadView: UIView {
 
@@ -40,14 +41,11 @@ final class NumpadView: UIView {
 
     private func setupUI() {
         addSubview(mainStack)
-
-        NSLayoutConstraint.activate([
-            mainStack.topAnchor.constraint(equalTo: topAnchor),
-            mainStack.bottomAnchor.constraint(equalTo: bottomAnchor),
-            mainStack.leadingAnchor.constraint(equalTo: leadingAnchor),
-            mainStack.trailingAnchor.constraint(equalTo: trailingAnchor)
-        ])
+        mainStack.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
     }
+    
 
     private func createButtons() {
 
@@ -73,30 +71,20 @@ final class NumpadView: UIView {
             mainStack.addArrangedSubview(horizontal)
         }
     }
-
+    
     private func createButton(title: String) -> UIButton {
-
         let button = UIButton(type: .system)
-
         button.setTitle(title, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 28, weight: .semibold)
         button.setTitleColor(.white, for: .normal)
-
         button.backgroundColor = title == "C" ? .systemRed : AppColors.cardBackground
-
-        button.translatesAutoresizingMaskIntoConstraints = false
-
-        button.widthAnchor.constraint(
-            equalToConstant: AppConstants.Layout.numpadButtonSize
-        ).isActive = true
-
-        button.heightAnchor.constraint(
-            equalToConstant: AppConstants.Layout.numpadButtonSize
-        ).isActive = true
+    
+        button.snp.makeConstraints { make in
+            make.size.equalTo(AppConstants.Layout.numpadButtonSize)
+        }
 
         button.layer.cornerRadius = AppConstants.Layout.numpadButtonCornerRadius
         button.clipsToBounds = true
-
         button.addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
 
         return button

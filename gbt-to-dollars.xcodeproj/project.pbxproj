@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		55EDD1F02F683CAD00C94F47 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 55EDD1EF2F683CAD00C94F47 /* SnapKit */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		55928A2B2F56F5A800904758 /* gbt-to-dollars.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "gbt-to-dollars.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55EDD1F02F683CAD00C94F47 /* SnapKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +83,7 @@
 			);
 			name = "gbt-to-dollars";
 			packageProductDependencies = (
+				55EDD1EF2F683CAD00C94F47 /* SnapKit */,
 			);
 			productName = "gbt-to-dollars";
 			productReference = 55928A2B2F56F5A800904758 /* gbt-to-dollars.app */;
@@ -107,6 +113,9 @@
 			);
 			mainGroup = 55928A222F56F5A800904758;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				55EDD1EE2F683CAD00C94F47 /* XCRemoteSwiftPackageReference "SnapKit" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 55928A2C2F56F5A800904758 /* Products */;
 			projectDirPath = "";
@@ -339,6 +348,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		55EDD1EE2F683CAD00C94F47 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.7.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		55EDD1EF2F683CAD00C94F47 /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 55EDD1EE2F683CAD00C94F47 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 55928A232F56F5A800904758 /* Project object */;
 }
