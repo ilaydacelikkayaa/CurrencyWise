@@ -8,9 +8,9 @@
 import UIKit
 
 enum AppColors {
-
+    
     static let background = UIColor.black
-
+    
     static let cardBackground = UIColor(
         red: 30/255,
         green: 30/255,
@@ -22,7 +22,7 @@ enum AppColors {
     
     static let textPrimary = UIColor.white
     static let textSecondary = UIColor.lightGray
-
+    
     static let accent = UIColor.systemBlue
     static let danger = UIColor.systemRed
 }

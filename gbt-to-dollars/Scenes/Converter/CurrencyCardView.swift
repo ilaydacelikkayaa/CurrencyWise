@@ -9,9 +9,9 @@ import UIKit
 import SnapKit
 
 final class CurrencyCardView: UIView {
-
+    
     // MARK: - UI Elements
-
+    
     private let contentStack: UIStackView = {
         let stack = UIStackView()
         stack.axis = .horizontal
@@ -19,7 +19,7 @@ final class CurrencyCardView: UIView {
         stack.distribution = .equalSpacing
         return stack
     }()
-
+    
     private let leftStack: UIStackView = {
         let stack = UIStackView()
         stack.axis = .horizontal
@@ -27,79 +27,75 @@ final class CurrencyCardView: UIView {
         stack.alignment = .center
         return stack
     }()
-
+    
     private let flagImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.clipsToBounds = true
         return imageView
     }()
-
+    
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = AppColors.textSecondary
         label.font = .systemFont(ofSize: 16, weight: .medium)
         return label
     }()
-
+    
     private let amountLabel: UILabel = {
         let label = UILabel()
         label.textColor = AppColors.textPrimary
         label.font = .systemFont(ofSize: 32, weight: .bold)
         return label
     }()
-
+    
     // MARK: - Init
-
+    
     init(title: String, flagName: String) {
         super.init(frame: .zero)
-
+        
         backgroundColor = AppColors.cardBackground
         layer.cornerRadius = AppConstants.Layout.cardCornerRadius
-
+        
         titleLabel.text = title
         flagImageView.image = UIImage(named: flagName)
-
+        
         setupUI()
         setupConstraints()
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     // MARK: - Setup
-
+    
     private func setupUI() {
         addSubview(contentStack)
-
         
         contentStack.addArrangedSubview(leftStack)
         contentStack.addArrangedSubview(amountLabel)
-
+        
         leftStack.addArrangedSubview(flagImageView)
         leftStack.addArrangedSubview(titleLabel)
+        
+        flagImageView.layer.cornerRadius = AppConstants.Layout.flagCornerRadius
     }
-
+    
     private func setupConstraints() {
         contentStack.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(AppConstants.Layout.cardPadding)
         }
+        
         flagImageView.snp.makeConstraints { make in
             make.size.equalTo(AppConstants.Layout.flagSize)
         }
-        
-
-            flagImageView.layer.cornerRadius = AppConstants.Layout.flagCornerRadius
-        }
-
-    // MARK: - Public Methods
-
-    func updateAmount(_ text: String) {
-        amountLabel.text = text
     }
     
-    func updateTitle(_ title: String, flagName: String) {
-        titleLabel.text = title
-        flagImageView.image = UIImage(named: flagName)
+    // MARK: - Public Methods
+    
+    func update(_ state: CurrencyDisplayState) {
+        titleLabel.text = state.title
+        flagImageView.image = UIImage(named: state.flagName)
+        amountLabel.text = state.amount
     }
 }
