@@ -23,7 +23,7 @@ final class ConverterController: UIViewController {
     
     private let lastUpdatedLabel: UILabel = {
         let label = UILabel()
-        label.text = "Last updated 04/03 5:12am\nUnlock premium for live exchange rates"
+        label.text = "Last updated"
         label.textColor = .systemGray
         label.font = .systemFont(ofSize: 12, weight: .regular)
         label.numberOfLines = 2
@@ -80,6 +80,7 @@ final class ConverterController: UIViewController {
         setupUI()
         setupBindings()
         updateUI()
+        viewModel.fetchLatestRate()
     }
     
     // MARK: - Setup
@@ -144,6 +145,15 @@ final class ConverterController: UIViewController {
         }
         
         swapButton.addTarget(self, action: #selector(swapTapped), for: .touchUpInside)
+        
+        viewModel.onRateUpdated = { [weak self] in
+            self?.updateUI()
+        }
+
+        viewModel.onRateError = { [weak self] message in
+            self?.updateUI()
+        }
+
     }
     
     // MARK: - Actions
@@ -160,5 +170,6 @@ final class ConverterController: UIViewController {
 
         gbpCard.update(state.top)
         usdCard.update(state.bottom)
+        lastUpdatedLabel.text = viewModel.lastUpdatedText
     }
 }

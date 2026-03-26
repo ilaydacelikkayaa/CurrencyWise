@@ -13,13 +13,24 @@ final class ConverterViewModel {
 
     private var inputText: String = ""
     private var isReversed: Bool = false
-    private let exchangeRate = AppConstants.Currency.defaultRate
+    private var exchangeRate: Double = ExchangeRateRepository.shared.cachedRate
+    private var rateDate: String? = ExchangeRateRepository.shared.cachedDate
+    private(set) var isLoadingRate: Bool = false
+    private(set) var isOffline: Bool = false
+
+    // MARK: - Callbacks
+
+    var onRateUpdated: (() -> Void)?
+    var onRateError: ((String) -> Void)?
 
     // MARK: - Output
 
     var displayState: DisplayState {
         let inputValue = Double(inputText) ?? 0
-        let convertedValue = isReversed ? (inputValue / exchangeRate) : (inputValue * exchangeRate)
+        let convertedValue = isReversed
+            ? (inputValue / exchangeRate)
+            : (inputValue * exchangeRate)
+
         let displayInput = inputText.isEmpty ? "0" : inputText
         let formattedOutput = convertedValue.toCurrencyString()
 
@@ -36,6 +47,64 @@ final class ConverterViewModel {
         }
     }
 
+    /// "Last updated 2026-03-25 · Live rate" veya "Last updated 2026-03-24 · Offline" gibi
+    var lastUpdatedText: String {
+        if isLoadingRate {
+            return "Fetching latest rates..."
+        }
+
+        let dateString: String
+        if let raw = rateDate {
+            dateString = formatDate(raw)
+        } else {
+            dateString = "Unknown"
+        }
+
+        if isOffline {
+            return "Last updated \(dateString) · Offline"
+        } else {
+            return "Last updated \(dateString)"
+        }
+    }
+
+    // MARK: - Network
+
+    func fetchLatestRate() {
+        isLoadingRate = true
+        isOffline = false
+
+        Task { [weak self] in
+            guard let self else { return }
+
+            do {
+                let result = try await ExchangeRateService.shared.fetchGBPtoUSD()
+                ExchangeRateRepository.shared.save(rate: result.rate, date: result.date)
+
+                await MainActor.run {
+                    self.exchangeRate = result.rate
+                    self.rateDate = result.date
+                    self.isLoadingRate = false
+                    self.isOffline = false
+                    self.onRateUpdated?()
+                }
+            } catch ExchangeRateError.noInternet {
+                await MainActor.run {
+                    self.isLoadingRate = false
+                    self.isOffline = true
+                    // Cached rate zaten mevcut, kullanmaya devam et
+                    self.onRateUpdated?()
+                }
+            } catch {
+                await MainActor.run {
+                    self.isLoadingRate = false
+                    self.isOffline = !ExchangeRateRepository.shared.hasCachedData
+                    self.onRateError?("Couldn't fetch rates. Using cached data.")
+                    self.onRateUpdated?()
+                }
+            }
+        }
+    }
+
     // MARK: - Input
 
     func didTapNumber(_ number: String) {
@@ -44,7 +113,6 @@ final class ConverterViewModel {
             inputText = number
             return
         }
-
         inputText += number
     }
 
@@ -53,7 +121,6 @@ final class ConverterViewModel {
             inputText = "0."
             return
         }
-
         if !inputText.contains(".") {
             inputText += "."
         }
@@ -65,5 +132,17 @@ final class ConverterViewModel {
 
     func didTapSwap() {
         isReversed.toggle()
+    }
+
+    // MARK: - Helpers
+
+    private func formatDate(_ raw: String) -> String {
+        // Frankfurter "2026-03-25" formatında döner
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        guard let date = formatter.date(from: raw) else { return raw }
+
+        formatter.dateFormat = "MMM d, yyyy"
+        return formatter.string(from: date)
     }
 }
