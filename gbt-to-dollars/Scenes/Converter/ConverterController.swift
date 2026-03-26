@@ -24,51 +24,35 @@ final class ConverterController: UIViewController {
     private let lastUpdatedLabel: UILabel = {
         let label = UILabel()
         label.text = "Last updated"
-        label.textColor = .systemGray
-        label.font = .systemFont(ofSize: 12, weight: .regular)
-        label.numberOfLines = 2
+        label.textColor = UIColor.white.withAlphaComponent(0.25)
+        label.font = .monospacedDigitSystemFont(ofSize: 11, weight: .regular)
+        label.numberOfLines = 1
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
-    private let topContainerStack: UIStackView = {
-        let stack = UIStackView()
-        stack.axis = .horizontal
-        stack.spacing = AppConstants.Layout.defaultSpacing
-        stack.alignment = .fill
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        return stack
+    private let cardContainer: UIView = {
+        let v = UIView()
+        v.translatesAutoresizingMaskIntoConstraints = false
+        return v
     }()
     
-    private let currencyStack: UIStackView = {
-        let stack = UIStackView()
-        stack.axis = .vertical
-        stack.spacing = AppConstants.Layout.defaultSpacing
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        return stack
-    }()
-    
-    private let gbpCard = CurrencyCardView(
-        title: "GBP",
-        flagName: "gbp_flag"
-    )
-    
-    private let usdCard = CurrencyCardView(
-        title: "USD",
-        flagName: "usd_flag"
-    )
+    private let gbpCard = CurrencyCardView(title: "GBP", flagName: "gbp_flag", role: .input)
+    private let usdCard = CurrencyCardView(title: "USD", flagName: "usd_flag", role: .output)
     
     private let swapButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "arrow.up.arrow.down"), for: .normal)
-        button.tintColor = AppColors.textPrimary
-        button.backgroundColor = AppColors.cardBackground
-        button.layer.cornerRadius = AppConstants.Layout.cardCornerRadius
+        let button = UIButton(type: .custom)
+        let config = UIImage.SymbolConfiguration(pointSize: 13, weight: .semibold)
+        button.setImage(UIImage(systemName: "arrow.up.arrow.down", withConfiguration: config), for: .normal)
+        button.tintColor = AppColors.textSecondary
+        button.backgroundColor = AppColors.background
+        button.layer.cornerRadius = 16
+        button.layer.borderWidth = 1.5
+        button.layer.borderColor = UIColor.white.withAlphaComponent(0.1).cgColor
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
-    
     
     // MARK: - Lifecycle
     
@@ -86,43 +70,50 @@ final class ConverterController: UIViewController {
     // MARK: - Setup
     
     private func setupUI() {
-        view.addSubview(topContainerStack)
+        view.addSubview(cardContainer)
         view.addSubview(numpadView)
         view.addSubview(lastUpdatedLabel)
         
-        topContainerStack.addArrangedSubview(currencyStack)
-        topContainerStack.addArrangedSubview(swapButton)
+        cardContainer.addSubview(gbpCard)
+        cardContainer.addSubview(usdCard)
+        cardContainer.addSubview(swapButton)
         
-        currencyStack.addArrangedSubview(gbpCard)
-        currencyStack.addArrangedSubview(usdCard)
+        gbpCard.translatesAutoresizingMaskIntoConstraints = false
+        usdCard.translatesAutoresizingMaskIntoConstraints = false
         
         setupConstraints()
-        
     }
     
     private func setupConstraints() {
         NSLayoutConstraint.activate([
-            topContainerStack.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,constant: AppConstants.Layout.topSpacing),
-            topContainerStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: AppConstants.Layout.horizontalPadding),
-            topContainerStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -AppConstants.Layout.horizontalPadding),
+            cardContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            cardContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: AppConstants.Layout.horizontalPadding),
+            cardContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -AppConstants.Layout.horizontalPadding),
             
-            currencyStack.widthAnchor.constraint(equalTo: topContainerStack.widthAnchor, multiplier: AppConstants.Layout.currencyStackWidthMultiplier),
-            
+            gbpCard.topAnchor.constraint(equalTo: cardContainer.topAnchor),
+            gbpCard.leadingAnchor.constraint(equalTo: cardContainer.leadingAnchor),
+            gbpCard.trailingAnchor.constraint(equalTo: cardContainer.trailingAnchor),
             gbpCard.heightAnchor.constraint(equalToConstant: AppConstants.Layout.cardHeight),
+            
+            usdCard.topAnchor.constraint(equalTo: gbpCard.bottomAnchor, constant: 2),
+            usdCard.leadingAnchor.constraint(equalTo: cardContainer.leadingAnchor),
+            usdCard.trailingAnchor.constraint(equalTo: cardContainer.trailingAnchor),
             usdCard.heightAnchor.constraint(equalToConstant: AppConstants.Layout.cardHeight),
+            usdCard.bottomAnchor.constraint(equalTo: cardContainer.bottomAnchor),
             
-            swapButton.widthAnchor.constraint(equalToConstant: AppConstants.Layout.swapButtonWidth),
-            swapButton.heightAnchor.constraint(equalTo: currencyStack.heightAnchor),
+            swapButton.centerYAnchor.constraint(equalTo: usdCard.topAnchor),
+            swapButton.trailingAnchor.constraint(equalTo: cardContainer.trailingAnchor, constant: -16),
+            swapButton.widthAnchor.constraint(equalToConstant: 32),
+            swapButton.heightAnchor.constraint(equalToConstant: 32),
             
-            numpadView.topAnchor.constraint(equalTo: topContainerStack.bottomAnchor, constant: AppConstants.Layout.numpadTopSpacing),
+            numpadView.topAnchor.constraint(equalTo: cardContainer.bottomAnchor, constant: AppConstants.Layout.numpadTopSpacing),
             numpadView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             numpadView.widthAnchor.constraint(equalToConstant: AppConstants.Layout.numpadWidth),
             
-            lastUpdatedLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: AppConstants.Layout.footerBottomSpacing),
+            lastUpdatedLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
             lastUpdatedLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }
-    
     
     // MARK: - Bindings
     
@@ -133,10 +124,8 @@ final class ConverterController: UIViewController {
             switch value {
             case "C":
                 self.viewModel.didTapClear()
-                
             case ".":
                 self.viewModel.didTapDot()
-                
             default:
                 self.viewModel.didTapNumber(value)
             }
@@ -153,12 +142,17 @@ final class ConverterController: UIViewController {
         viewModel.onRateError = { [weak self] message in
             self?.updateUI()
         }
-
     }
     
     // MARK: - Actions
     
     @objc private func swapTapped() {
+        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 8) {
+            self.swapButton.transform = CGAffineTransform(rotationAngle: .pi)
+        } completion: { _ in
+            self.swapButton.transform = .identity
+        }
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
         viewModel.didTapSwap()
         updateUI()
     }
@@ -167,7 +161,6 @@ final class ConverterController: UIViewController {
     
     private func updateUI() {
         let state = viewModel.displayState
-
         gbpCard.update(state.top)
         usdCard.update(state.bottom)
         lastUpdatedLabel.text = viewModel.lastUpdatedText
