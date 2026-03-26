@@ -64,6 +64,7 @@ final class ConverterController: UIViewController {
         setupUI()
         setupBindings()
         updateUI()
+        showWelcomeIfNeeded()
         viewModel.fetchLatestRate()
     }
     
@@ -113,6 +114,16 @@ final class ConverterController: UIViewController {
             lastUpdatedLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
             lastUpdatedLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
+    }
+    
+    private func showWelcomeIfNeeded() {
+        if !UserDefaults.standard.bool(forKey: "onboarding_completed") {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                let welcome = WelcomeViewController()
+                welcome.modalPresentationStyle = .fullScreen
+                self.present(welcome, animated: true)
+            }
+        }
     }
     
     // MARK: - Bindings
