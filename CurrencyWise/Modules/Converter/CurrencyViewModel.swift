@@ -7,14 +7,14 @@
 
 import Foundation
 
-final class ConverterViewModel {
+final class CurrencyViewModel {
 
     // MARK: - Properties
 
     private var inputText: String = ""
     private var isReversed: Bool = false
-    private var exchangeRate: Double = ExchangeRateRepository.shared.cachedRate
-    private var rateDate: String? = ExchangeRateRepository.shared.cachedDate
+    private var exchangeRate: Double = CurrencyRepository.shared.cachedRate
+    private var rateDate: String? = CurrencyRepository.shared.cachedDate
     private(set) var isLoadingRate: Bool = false
     private(set) var isOffline: Bool = false
 
@@ -78,7 +78,7 @@ final class ConverterViewModel {
 
             do {
                 let result = try await ExchangeRateService.shared.fetchGBPtoUSD()
-                ExchangeRateRepository.shared.save(rate: result.rate, date: result.date)
+                CurrencyRepository.shared.save(rate: result.rate, date: result.date)
 
                 await MainActor.run {
                     self.exchangeRate = result.rate
@@ -97,7 +97,7 @@ final class ConverterViewModel {
             } catch {
                 await MainActor.run {
                     self.isLoadingRate = false
-                    self.isOffline = !ExchangeRateRepository.shared.hasCachedData
+                    self.isOffline = !CurrencyRepository.shared.hasCachedData
                     self.onRateError?("Couldn't fetch rates. Using cached data.")
                     self.onRateUpdated?()
                 }

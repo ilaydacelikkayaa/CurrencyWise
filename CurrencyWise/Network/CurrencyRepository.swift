@@ -8,9 +8,9 @@
 
 import Foundation
 
-final class ExchangeRateRepository {
+final class CurrencyRepository {
 
-    static let shared = ExchangeRateRepository()
+    static let shared = CurrencyRepository()
     private init() {}
 
     private let defaults = UserDefaults.standard

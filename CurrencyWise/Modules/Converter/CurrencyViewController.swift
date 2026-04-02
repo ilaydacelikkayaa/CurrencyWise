@@ -7,11 +7,11 @@
 
 import UIKit
 
-final class ConverterController: UIViewController {
+final class CurrencyViewController: UIViewController {
     
     // MARK: - Properties
     
-    private let viewModel = ConverterViewModel()
+    private let viewModel = CurrencyViewModel()
     
     // MARK: - UI Elements
     
